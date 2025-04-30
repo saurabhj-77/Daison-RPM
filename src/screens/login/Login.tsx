@@ -10,7 +10,6 @@ import {
   import { Visibility, VisibilityOff } from "@mui/icons-material";
   import { useState } from "react";
   import { useNavigate } from "react-router-dom";
-  import logo from "../../assests/img/logo512.png";
   
   
   export default function LoginScreen() {
@@ -55,11 +54,10 @@ import {
     return (
       <Container maxWidth="sm">
         <Box display="flex" flexDirection="column" alignItems="center" mt={5}>
-          {/* <img src="/assets/img/logo512.png" alt="Logo" height={45} /> */}
-          <img src="/assets/img/dasionlogo.png" alt="Logo" height={45} />
+          <img src="/assets/dasionlogo.png" alt="dasionlogo" height={45} />
           <Box mt={4} bgcolor="#1976d2" p={2} width="100%">
             <Typography variant="h5" color="white">
-              Let's get you started
+              Let's get you started wit Dasion
             </Typography>
           </Box>
   
