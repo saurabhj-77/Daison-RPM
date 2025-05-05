@@ -5,11 +5,13 @@ import {
     TextField,
     Typography,
     InputAdornment,
-    IconButton
+    IconButton,
+    Link
   } from "@mui/material";
   import { Visibility, VisibilityOff } from "@mui/icons-material";
   import { useState } from "react";
   import { useNavigate } from "react-router-dom";
+  import dasionLogo from '../../../assests/img/dasionlogo.png';
   
   
   export default function LoginScreen() {
@@ -46,15 +48,41 @@ import {
   
     const handleLogin = async () => {
       if (validate()) {
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const userRole = user?.userType || localStorage.getItem("role");
         // Simulated login call
-        navigate("/home");
+        switch (userRole) {
+          case "doctor":
+            navigate("/doctor-dashboard");
+            break;
+          case "patient":
+            navigate("/patient/home");
+            break;
+          default:
+            throw new Error("Unauthorized role. Please contact support.");
+        }
       }
     };
   
     return (
       <Container maxWidth="sm">
         <Box display="flex" flexDirection="column" alignItems="center" mt={5}>
-          <img src="/assets/dasionlogo.png" alt="dasionlogo" height={45} />
+          {/* <img src="/assets/img/dasionlogo.png" alt="dasionlogo" height={45} /> */}
+          <Typography
+          variant="h6"
+          component={Link}
+          href="/"
+          sx={{
+            textDecoration: "none",
+            color: "inherit",
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+         <Box component="img" src={dasionLogo} alt="dasion" sx={{ width: 40, height: 40, mr: 1 }} /> 
+        {/* <Box component="img" src="/assets/img/dasionlogo.png" alt="dasion" sx={{ width: 40, height: 40, mr: 1 }} /> */}
+          Dasion Smart RPM
+        </Typography>
           <Box mt={4} bgcolor="#1976d2" p={2} width="100%">
             <Typography variant="h5" color="white">
               Let's get you started wit Dasion
@@ -111,6 +139,7 @@ import {
             <Box textAlign="center" mt={4}>
               <Button
                 variant="contained"
+                fullWidth
                 color="primary"
                 sx={{ borderRadius: 50, px: 5, py: 1.5 }}
                 onClick={handleLogin}

@@ -13,9 +13,11 @@ import {
   InputAdornment,
   CircularProgress,
   FormHelperText,
+  Link,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import dasionLogo from '../../../assests/img/dasionlogo.png';
 
 export default function RegisterScreen() {
   const navigate = useNavigate();
@@ -105,7 +107,7 @@ export default function RegisterScreen() {
       // Save user data to localStorage
       localStorage.setItem("user", JSON.stringify(userData));
   
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       console.error(error);
     } finally {
@@ -117,7 +119,21 @@ export default function RegisterScreen() {
   return (
     <Container maxWidth="sm">
       <Box display="flex" justifyContent="center" mt={5}>
-        <img src="/assets/dasionlogo.png" alt="Logo" height={45} />
+      <Typography
+          variant="h6"
+          component={Link}
+          href="/"
+          sx={{
+            textDecoration: "none",
+            color: "inherit",
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+         <Box component="img" src={dasionLogo} alt="dasion" sx={{ width: 40, height: 40, mr: 1 }} /> 
+        {/* <Box component="img" src="/assets/img/dasionlogo.png" alt="dasion" sx={{ width: 40, height: 40, mr: 1 }} /> */}
+          Dasion Smart RPM
+        </Typography>
       </Box>
       <Box mt={3} mb={2} bgcolor="#0d47a1" color="white" p={2} borderRadius={1}>
         <Typography variant="h5">User Registration</Typography>
@@ -212,7 +228,7 @@ export default function RegisterScreen() {
           <Typography
             variant="body2"
             sx={{ cursor: "pointer", fontWeight: 600, color: "#0d47a1" }}
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/")}
           >
             Login
           </Typography>

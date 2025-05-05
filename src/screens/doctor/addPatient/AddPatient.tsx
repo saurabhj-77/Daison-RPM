@@ -9,6 +9,7 @@ import {
   ListItem,
   ListItemText,
 } from "@mui/material";
+import MainLayout from "../../layout/MainLayout";
 
 // Sample doctorId from current logged in doctor (simulate)
 const currentDoctorId = "doctor123";
@@ -32,6 +33,7 @@ export default function AddPatientsScreen() {
   const unassignedPatients = patients.filter((p) => p.doctor === "");
 
   return (
+    <MainLayout>
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <Box bgcolor="#1976d2" color="white" p={3} borderRadius={2} mb={3}>
         <Typography variant="h5">Add Patients</Typography>
@@ -75,5 +77,6 @@ export default function AddPatientsScreen() {
         </List>
       )}
     </Container>
+    </MainLayout>
   );
 }
