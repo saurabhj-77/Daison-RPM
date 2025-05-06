@@ -8,6 +8,7 @@ import AddPatientsScreen from "./screens/doctor/addPatient/AddPatient";
 import ViewPatientDetails from "./screens/doctor/viewPatients/ViewPatients";
 import MeasurementHistory from "./screens/doctor/measurementHistory/MeasurementHistory";
 import AddMeasurement from "./screens/doctor/addMeasurement/AddMeasurement";
+import PatientDashboard from "./screens/patient/patientDashboard/PatientDashboard";
 
 function AuthenticationWrapper() {
   const [loading, setLoading] = useState(true);
@@ -70,6 +71,7 @@ export default function App() {
           element={<MeasurementHistory />}
         />
         <Route path="/add-measurement" element={<AddMeasurement />} />
+        <Route path="/patient-dashboard" element={<PatientDashboard />} />
       </Routes>
     </Router>
   );

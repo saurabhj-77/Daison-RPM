@@ -56,7 +56,7 @@ import {
             navigate("/doctor-dashboard");
             break;
           case "patient":
-            navigate("/patient/home");
+            navigate("/patient-dashboard");
             break;
           default:
             throw new Error("Unauthorized role. Please contact support.");

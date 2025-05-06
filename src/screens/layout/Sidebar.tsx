@@ -16,6 +16,7 @@ import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'; // AddPatient
 import VisibilityIcon from '@mui/icons-material/Visibility';      // ViewDetailsIcon
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';   // MeasurementIcon
 import AssignmentIcon from '@mui/icons-material/Assignment';       
+import PatientDashboard from "../patient/patientDashboard/PatientDashboard";
 
 const Sidebar = ({ role = "doctor", adminFlag = false }) => {
   const [location] = useLocation();
@@ -27,9 +28,9 @@ const Sidebar = ({ role = "doctor", adminFlag = false }) => {
   ];
 
   const patientMenu = [
-    { to: "/patient/home", text: "Dashboard", icon: <DashboardIcon /> },
-    { to: "/patient/home", text: "Measurement", icon: <MonitorHeartIcon /> },
-    { to: "/patient/home", text: "Assessment", icon: <AssignmentIcon /> },
+    { to: "/patient-dashboard", text: "Dashboard", icon: <PatientDashboard /> },
+    // { to: "/patient/home", text: "Measurement", icon: <MonitorHeartIcon /> },
+    // { to: "/patient/home", text: "Assessment", icon: <AssignmentIcon /> },
   ];
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const userRole = user?.userType || localStorage.getItem("role");
