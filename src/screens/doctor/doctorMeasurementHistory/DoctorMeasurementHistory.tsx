@@ -156,9 +156,12 @@ export default function PatientMeasurementHistory() {
                         return (
                             <Card key={idx} sx={{ mb: 2, borderRadius: 2, boxShadow: 2 }}>
                                 <CardContent>
+                                    <Typography variant="h6" color="text.secondary">
+                                        {date.toLocaleDateString()} &nbsp; {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </Typography>
                                     <Box display="flex" justifyContent="space-between">
-                                        <Typography variant="h6" color="text.secondary">
-                                            {date.toLocaleDateString()} &nbsp; {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        <Typography mt={1} variant="h6" fontWeight="bold">
+                                            Reading:
                                         </Typography>
                                         <Chip
                                             label={status}
@@ -167,11 +170,8 @@ export default function PatientMeasurementHistory() {
                                             sx={{ fontSize: "0.9rem", height: 35, width: 100 }}
                                         />
                                     </Box>
-                                    <Typography mt={1} variant="h6" fontWeight="bold">
-                                        Reading:
-                                    </Typography>
                                     {displayValue}
-                                    
+
                                 </CardContent>
                             </Card>
                         );
