@@ -13,7 +13,7 @@ import {
     FormHelperText,
 } from "@mui/material";
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import MainLayout from "../../layout/MainLayout";
 
 const measurementUnits = {
@@ -31,14 +31,16 @@ const measurementTypes = [
     "Respiratory Rate",
     "Blood Oxygen Level",
     "Blood Pressure",
-    "Weight",
+    "Weight", ``
 ];
 
-export default function AddMeasurement() {
+export default function PatientAddMeasurement() {
     const navigate = useNavigate();
+    const { patientId, measurementType } = useParams();
     const location = useLocation();
     const initialType =
         location.state?.measurementType || "Body Temperature";
+    const initialPatientId = location.state?.patientId || "";
 
     const [type, setType] = useState<keyof typeof measurementUnits>(initialType);
     const [value, setValue] = useState("");
@@ -69,13 +71,66 @@ export default function AddMeasurement() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!validate()) return;
 
-        // Save measurement logic here
-        alert("Measurement saved.");
-        navigate(-1); // Go back
+        const token = localStorage.getItem("accessToken");
+        const patientId = initialPatientId;
+
+        // Map display type to backend type
+        const backendTypeMap: Record<string, string> = {
+            "Body Temperature": "temperature",
+            "Heart Rate": "heartRate",
+            "Respiratory Rate": "respiratoryRate",
+            "Blood Oxygen Level": "oxygenLevel",
+            "Blood Pressure": "bloodPressure",
+            "Weight": "weight",
+        };
+
+        const backendType = backendTypeMap[type];
+
+        let valueToSend;
+        if (type === "Blood Pressure") {
+            valueToSend = `Systolic: ${systolic} mmHg, Diastolic: ${diastolic} mmHg`;
+        } else {
+            valueToSend = `${value} ${measurementUnits[type]}`;
+        }
+
+        const payload = {
+            type: backendType,
+            value: valueToSend,
+            readingTime: time,
+            readingDate: date,
+            meals,
+            notes,
+        };
+
+        try {
+            const response = await fetch(
+                `http://localhost:2000/api/v1/doctor/patient-data/${patientId}`,
+                {
+                    method: "POST", // or POST depending on your API
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to save measurement");
+            }
+
+            alert("Measurement saved successfully.");
+            navigate(-1);
+        } catch (error) {
+            console.error("Error saving measurement:", error);
+            alert("Something went wrong. Please try again.");
+        }
     };
+
+
 
     return (
         <MainLayout>
@@ -180,9 +235,9 @@ export default function AddMeasurement() {
                         onChange={(e) => setMeals(e.target.value)}
                         label="Meals"
                     >
-                        <MenuItem value="Before Meal">Before Meal</MenuItem>
-                        <MenuItem value="After Meal">After Meal</MenuItem>
-                        <MenuItem value="Not Applicable">Not Applicable</MenuItem>
+                        <MenuItem value="Before meal">Before Meal</MenuItem>
+                        <MenuItem value="After meal">After Meal</MenuItem>
+                        <MenuItem value="Not applicable">Not Applicable</MenuItem>
                     </Select>
                     {errors.meals && <FormHelperText>{errors.meals}</FormHelperText>}
                 </FormControl>

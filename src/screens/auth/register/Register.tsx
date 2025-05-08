@@ -22,48 +22,48 @@ import dasionLogo from '../../../assests/img/dasionlogo.png';
 export default function RegisterScreen() {
   const navigate = useNavigate();
 
-  const [userType, setUserType] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [role, setrole] = useState("");
+  const [first, setFirst] = useState("");
+  const [last, setLast] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({
-    userType: "",
-    firstName: "",
-    lastName: "",
+    role: "",
+    first: "",
+    last: "",
     email: "",
     password: "",
   });
-
+  const API_BASE_URL = "http://localhost:2000/api/v1";
   const validate = () => {
     const newErrors: typeof errors = {
-      userType: "",
-      firstName: "",
-      lastName: "",
+      role: "",
+      first: "",
+      last: "",
       email: "",
       password: "",
     };
     let valid = true;
 
-    if (!userType) {
-      newErrors.userType = "Please select a user type.";
+    if (!role) {
+      newErrors.role = "Please select a user type.";
       valid = false;
     }
-    if (!firstName.trim()) {
-      newErrors.firstName = "First name is required.";
+    if (!first.trim()) {
+      newErrors.first = "First name is required.";
       valid = false;
-    } else if (!/^[A-Za-z]+$/.test(firstName)) {
-      newErrors.firstName = "First name should contain only letters.";
+    } else if (!/^[A-Za-z]+$/.test(first)) {
+      newErrors.first = "First name should contain only letters.";
       valid = false;
     }
 
-    if (!lastName.trim()) {
-      newErrors.lastName = "Last name is required.";
+    if (!last.trim()) {
+      newErrors.last = "Last name is required.";
       valid = false;
-    } else if (!/^[A-Za-z]+$/.test(lastName)) {
-      newErrors.lastName = "Last name should contain only letters.";
+    } else if (!/^[A-Za-z]+$/.test(last)) {
+      newErrors.last = "Last name should contain only letters.";
       valid = false;
     }
 
@@ -87,35 +87,44 @@ export default function RegisterScreen() {
     return valid;
   };
 
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!validate()) return;
     setLoading(true);
     try {
-      // Simulated registration response
-      const userCredential = {
-        user: { uid: "demo-id" },
-      };
+      const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          role,
+          first,
+          last,
+          email,
+          password,
+        }),
+      });
   
-      const userData = {
-        uid: userCredential.user.uid,
-        email,
-        firstName,
-        lastName,
-        userType,
-      };
+      const data = await response.json();
   
-      // Save user data to localStorage
-      localStorage.setItem("user", JSON.stringify(userData));
-  
-      navigate("/");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
+      if (data.success) {
+        alert("Registration successful! Please log in.");
+        navigate("/");
+      } else{
+        // setErrors((prev) => ({ ...prev, email: data.message }));
+        alert(data.message);
+      }
+    } catch (error: any) {
+      alert(error.message); // You can replace this with a UI snackbar
+      console.error("Registration error:", error);
     }
   };
   
-
   return (
     <Container maxWidth="sm">
       <Box display="flex" justifyContent="center" mt={5}>
@@ -139,18 +148,24 @@ export default function RegisterScreen() {
         <Typography variant="h5">User Registration</Typography>
       </Box>
       <form onSubmit={handleSubmit}>
-        <FormControl fullWidth margin="normal" error={!!errors.userType}>
-          <InputLabel id="userType-label">Registering as *</InputLabel>
+        <FormControl fullWidth margin="normal" error={!!errors.role}>
+          <InputLabel id="role-label">Registering as *</InputLabel>
           <Select
-            labelId="userType-label"
-            value={userType}
+            labelId="role-label"
+            value={role}
             label="Registering as *"
-            onChange={(e) => setUserType(e.target.value)}
+            // onChange={(e) => setrole(e.target.value)}
+            onChange={(e) => {
+              setrole(e.target.value);
+              if (errors.role) {
+                setErrors((prev) => ({ ...prev, role: "" }));
+              }
+            }}
           >
             <MenuItem value="patient">Patient</MenuItem>
             <MenuItem value="doctor">Doctor</MenuItem>
           </Select>
-          <FormHelperText>{errors.userType}</FormHelperText>
+          <FormHelperText>{errors.role}</FormHelperText>
         </FormControl>
 
         <TextField
@@ -158,10 +173,16 @@ export default function RegisterScreen() {
           variant="outlined"
           fullWidth
           margin="normal"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          error={!!errors.firstName}
-          helperText={errors.firstName}
+          value={first}
+          // onChange={(e) => setFirst(e.target.value)}
+          onChange={(e) => {
+            setFirst(e.target.value);
+            if (errors.first) {
+              setErrors((prev) => ({ ...prev, first: "" }));
+            }
+          }}
+          error={!!errors.first}
+          helperText={errors.first}
         />
 
         <TextField
@@ -169,10 +190,16 @@ export default function RegisterScreen() {
           variant="outlined"
           fullWidth
           margin="normal"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          error={!!errors.lastName}
-          helperText={errors.lastName}
+          value={last}
+          // onChange={(e) => setLast(e.target.value)}
+          onChange={(e) => {
+            setLast(e.target.value);
+            if (errors.last) {
+              setErrors((prev) => ({ ...prev, last: "" }));
+            }
+          }}
+          error={!!errors.last}
+          helperText={errors.last}
         />
 
         <TextField
@@ -182,7 +209,13 @@ export default function RegisterScreen() {
           fullWidth
           margin="normal"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          // onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (errors.email) {
+              setErrors((prev) => ({ ...prev, email: "" }));
+            }
+          }}
           error={!!errors.email}
           helperText={errors.email}
         />
@@ -194,7 +227,13 @@ export default function RegisterScreen() {
           fullWidth
           margin="normal"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          // onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            if (errors.password) {
+              setErrors((prev) => ({ ...prev, password: "" }));
+            }
+          }}
           error={!!errors.password}
           helperText={errors.password}
           InputProps={{

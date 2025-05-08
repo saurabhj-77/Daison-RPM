@@ -4,23 +4,24 @@ import { CircularProgress, Box } from "@mui/material";
 import LoginScreen from "./screens/auth/login/Login"
 import RegisterScreen from "./screens/auth/register/Register";
 import DoctorHomeDashboard from "./screens/doctor/doctorDashboard/DoctorDashboard";
-import AddPatientsScreen from "./screens/doctor/addPatient/AddPatient";
-import ViewPatientDetails from "./screens/doctor/viewPatients/ViewPatients";
-import MeasurementHistory from "./screens/doctor/measurementHistory/MeasurementHistory";
-import AddMeasurement from "./screens/doctor/addMeasurement/AddMeasurement";
+import DoctorAddPatients from "./screens/doctor/doctorAddPatient/DoctorAddPatient";
+import DoctorViewPatients from "./screens/doctor/doctorViewPatients/DoctorViewPatients";
+import DoctorMeasurementHistory from "./screens/doctor/doctorMeasurementHistory/DoctorMeasurementHistory";
+import DoctorAddMeasurement from "./screens/doctor/doctorAddMeasurement/DoctorAddMeasurement";
 import PatientDashboard from "./screens/patient/patientDashboard/PatientDashboard";
+import PatientMeasurementHistory from "./screens/patient/patientMeasurementHistory/PatientMeasurementHistory";
+import PatientAddMeasurement from "./screens/patient/patientAddMeasurement/PatientAddMeasurement";
 
 function AuthenticationWrapper() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
-  console.log(user.firstName); // Access stored user data
 
 
   useEffect(() => {
     const initialize = async () => {
-      const firebaseUser = { uid: "demo-user-id" }; // Replace with Firebase Auth currentUser
-      const userProvider = await loadUser(firebaseUser.uid); // Simulated user load
+      const firebaseUser = { uid: "demo-user-id" };
+      const userProvider = await loadUser(firebaseUser.uid); 
 
       if (firebaseUser) {
         const type = (userProvider as { userType: string }).userType.toLowerCase();
@@ -45,10 +46,9 @@ function AuthenticationWrapper() {
 }
 
 async function loadUser(uid: string): Promise<{ userType: string }> {
-  // Simulate a fetch from DB or Firebase
   return new Promise(resolve => {
     setTimeout(() => {
-      resolve({ userType: "doctor" }); // Change to "patient" to test patient flow
+      resolve({ userType: "doctor" });
     }, 1000);
   });
 }
@@ -57,21 +57,21 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* <Route path="/" element={<SplashScreen />} />
-        <Route path="/home" element={<AuthenticationWrapper />} />
-        <Route path="/doctor" element={<DoctorHome />} />
-        <Route path="/patient" element={<PatientHome />} /> */}
         <Route path="/" element={<LoginScreen />} />
         <Route path="/register" element={<RegisterScreen />} />
         <Route path="/doctor-dashboard" element={<DoctorHomeDashboard />} />
-        <Route path="/doctor-addpatient" element={<AddPatientsScreen />} />
-        <Route path="/doctor-view-patient/:id" element={<ViewPatientDetails />} />
+        <Route path="/doctor-addpatient" element={<DoctorAddPatients />} />
+        <Route path="/doctor-view-patient/:id" element={<DoctorViewPatients />} />
         <Route
-          path="/measurement-history/:patientId/:measurementType"
-          element={<MeasurementHistory />}
+          path="/doctor-measurement-history/:patientId/:measurementType"
+          element={<DoctorMeasurementHistory />}
         />
-        <Route path="/add-measurement" element={<AddMeasurement />} />
+        <Route path="/doctor-add-measurement" element={<DoctorAddMeasurement />} />
+
+         {/* Patient routes  */}
         <Route path="/patient-dashboard" element={<PatientDashboard />} />
+        <Route path="/patient-add-measurement" element={<PatientAddMeasurement />} />
+        <Route path="/patient-measurement-history/:patientId/:measurementType" element={<PatientMeasurementHistory />} />
       </Routes>
     </Router>
   );

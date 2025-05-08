@@ -12,7 +12,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import MainLayout from "../../layout/MainLayout";
 
-export default function PatientDashboard() {
+export default function DoctorViewPatients() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,18 +20,12 @@ export default function PatientDashboard() {
   const [patientData, setPatientData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [measurements, setMeasurements] = useState<any[]>([]);
-  const user = localStorage.getItem("user");
-  const userId = user ? JSON.parse(user).id : null;
-  const userFirstName = user ? JSON.parse(user).firstName : null;
-  const userLastName = user ? JSON.parse(user).lastName : null;
-  console.log("User:", user);
-  console.log("User ID:", userId);
 
   const fetchPatientData = async () => {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await fetch(
-        `http://localhost:2000/api/v1/doctor/patient-data/${userId}`,
+        `http://localhost:2000/api/v1/doctor/patient-data/${id}`,
         {
           method: "GET",
           headers: {
@@ -52,7 +46,7 @@ export default function PatientDashboard() {
 
   useEffect(() => {
     fetchPatientData();
-  }, [userId]);
+  }, [id]);
 
   const measurementFields = [
     { label: "Blood Pressure", key: "bloodPressure", unit: "(mmHg)" },
@@ -68,7 +62,7 @@ export default function PatientDashboard() {
       .sort(
         (a, b) => new Date(b.readingTime).getTime() - new Date(a.readingTime).getTime()
       );
-    return filtered[0];
+    return filtered[0]; // latest
   };
 
 
@@ -122,7 +116,7 @@ export default function PatientDashboard() {
           alignItems="center"
         >
           <Box>
-            <Typography variant="body2">Hello {userFirstName}{" "}{userLastName}</Typography>
+            <Typography variant="body2">Patient Name</Typography>
             <Typography fontWeight="bold" variant="h6">
               {patientName}
             </Typography>
@@ -155,7 +149,7 @@ export default function PatientDashboard() {
                 sx={{ mb: 2, cursor: "pointer" }}
                 onClick={() => {
                   if (route) {
-                    navigate(`/patient-measurement-history/${userId}/${route}`, {
+                    navigate(`/doctor-measurement-history/${id}/${route}`, {
                       state: {
                         measurementType: key,
                         measurementData: item,

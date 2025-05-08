@@ -21,6 +21,9 @@ import {
     const [errors, setErrors] = useState({ email: "", password: "" });
   
     const navigate = useNavigate();
+
+    const API_BASE_URL = "http://localhost:2000/api/v1";
+
   
     const validate = () => {
       let valid = true;
@@ -47,11 +50,38 @@ import {
     };
   
     const handleLogin = async () => {
-      if (validate()) {
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const userRole = user?.userType || localStorage.getItem("role");
-        // Simulated login call
-        switch (userRole) {
+      if (!validate()) return;
+    
+      try {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, password })
+        });
+    
+        const result = await response.json();
+    
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "Login failed");
+        }
+    
+        const { token, role, id, first, last, email: userEmail } = result.data;
+    
+        // Save to localStorage
+        localStorage.setItem("accessToken", token);
+        localStorage.setItem("user", JSON.stringify({
+          id,
+          firstName: first,
+          lastName: last,
+          email: userEmail,
+          role
+        }));
+        localStorage.setItem("role", role);
+    
+        // Navigate based on role
+        switch (role) {
           case "doctor":
             navigate("/doctor-dashboard");
             break;
@@ -61,9 +91,14 @@ import {
           default:
             throw new Error("Unauthorized role. Please contact support.");
         }
+      } catch (error: any) {
+        alert(error.message);
+        console.error("Login error:", error);
       }
     };
-  
+    
+    
+    
     return (
       <Container maxWidth="sm">
         <Box display="flex" flexDirection="column" alignItems="center" mt={5}>
@@ -97,7 +132,13 @@ import {
               fullWidth
               variant="outlined"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (errors.email) {
+                  setErrors((prev) => ({ ...prev, email: "" }));
+                }
+              }}
+              
               placeholder="Enter your email"
               error={!!errors.email}
               helperText={errors.email}
@@ -111,7 +152,12 @@ import {
               variant="outlined"
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (errors.password) {
+                  setErrors((prev) => ({ ...prev, password: "" }));
+                }
+              }}
               placeholder="Enter your password"
               error={!!errors.password}
               helperText={errors.password}
