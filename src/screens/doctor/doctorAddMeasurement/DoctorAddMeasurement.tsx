@@ -36,7 +36,6 @@ const measurementTypes = [
 
 export default function DoctorAddMeasurement() {
     const navigate = useNavigate();
-    const { patientId, measurementType } = useParams();
     const location = useLocation();
     const initialType =
         location.state?.measurementType || "Body Temperature";

@@ -10,6 +10,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import MainLayout from "../../layout/MainLayout";
+import { determineStatus } from "../../../utils/Utils";
 
 const getStatusColor = (status: string) => {
     switch (status) {
@@ -107,27 +108,70 @@ export default function PatientMeasurementHistory() {
                     <Typography>Loading...</Typography>
                 ) : measurements.length > 0 ? (
                     measurements.map((item, idx) => {
-                        const date = new Date(item.timestamp);
+                        const date = new Date(item.readingTime);
+                        const status = determineStatus(measurementType || "", item.value);
+                        const color = getStatusColor(status);
+
+                        let displayValue = (
+                            <Typography variant="h6" fontWeight="bold">
+                                {item.value} {item.unit}
+                            </Typography>
+                        );
+
+                        if ((measurementType || "").toLowerCase() === "bloodpressure") {
+                            // Try parsing blood pressure value
+                            let systolic = "";
+                            let diastolic = "";
+
+                            try {
+                                const parsed = JSON.parse(item.value);
+                                systolic = parsed.systolic || "";
+                                diastolic = parsed.diastolic || "";
+                            } catch {
+                                const systolicMatch = item.value.match(/Systolic:\s*(\d+)\s*mmHg/i);
+                                const diastolicMatch = item.value.match(/Diastolic:\s*(\d+)\s*mmHg/i);
+                                if (systolicMatch) systolic = `${systolicMatch[1]} mmHg`;
+                                if (diastolicMatch) diastolic = `${diastolicMatch[1]} mmHg`;
+                            }
+
+                            displayValue = (
+                                <Box display="flex" gap={4} mt={1} mb={1}>
+                                    <Box textAlign="center">
+                                        <Typography variant="h6" color="text.secondary">
+                                            Systolic
+                                        </Typography>
+                                        <Typography fontWeight="bold">{systolic}</Typography>
+                                    </Box>
+                                    <Box textAlign="center">
+                                        <Typography variant="h6" color="text.secondary">
+                                            Diastolic
+                                        </Typography>
+                                        <Typography fontWeight="bold">{diastolic}</Typography>
+                                    </Box>
+                                </Box>
+                            );
+
+                        }
+
                         return (
-                            <Card key={idx} sx={{ mb: 2 }}>
+                            <Card key={idx} sx={{ mb: 2, borderRadius: 2, boxShadow: 2 }}>
                                 <CardContent>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {new Date(item.readingTime).toLocaleDateString()} &nbsp;&nbsp;
-                                        {new Date(item.readingTime).toLocaleTimeString()}
-                                    </Typography>
-
-                                    <Typography mt={1} variant="h6" fontWeight="bold">
-                                        Reading: {item.value} {item.unit}
-                                    </Typography>
-
-                                    {item.status && (
+                                    <Box display="flex" justifyContent="space-between">
+                                        <Typography variant="h6" color="text.secondary">
+                                            {date.toLocaleDateString()} &nbsp; {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </Typography>
                                         <Chip
-                                            label={item.status}
-                                            color={getStatusColor(item.status)}
+                                            label={status}
+                                            color={color}
                                             variant="outlined"
-                                            sx={{ fontSize: "1rem", height: 36, px: 2 }}
+                                            sx={{ fontSize: "0.9rem", height: 35, width: 100 }}
                                         />
-                                    )}
+                                    </Box>
+                                    <Typography mt={1} variant="h6" fontWeight="bold">
+                                        Reading:
+                                    </Typography>
+                                    {displayValue}
+                                    
                                 </CardContent>
                             </Card>
                         );
@@ -135,6 +179,7 @@ export default function PatientMeasurementHistory() {
                 ) : (
                     <Typography>No readings found.</Typography>
                 )}
+
 
                 <Box
                     sx={{

@@ -135,7 +135,7 @@ export default function PatientAddMeasurement() {
     return (
         <MainLayout>
             <Container maxWidth="sm" sx={{ py: 4 }}>
-                <Typography variant="h5" fontWeight="bold" gutterBottom>
+                <Typography variant="h4" fontWeight="bold" gutterBottom>
                     Add Measurement
                 </Typography>
                 <Typography color="textSecondary" mb={3}>
@@ -241,7 +241,9 @@ export default function PatientAddMeasurement() {
                     </Select>
                     {errors.meals && <FormHelperText>{errors.meals}</FormHelperText>}
                 </FormControl>
-
+                <Typography color="textSecondary" mt={3}>
+                    Anything you would like the doctor to know?
+                </Typography>
                 <TextField
                     fullWidth
                     multiline
@@ -254,7 +256,7 @@ export default function PatientAddMeasurement() {
                 />
 
                 <Box mt={3} display="flex" justifyContent="space-between">
-                    <Button variant="outlined" color="inherit" onClick={() => navigate(-1)}>
+                    <Button variant="contained" color="inherit" onClick={() => navigate(-1)}>
                         Cancel
                     </Button>
                     <Button variant="contained" color="primary" onClick={handleSave}>

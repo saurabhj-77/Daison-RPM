@@ -88,25 +88,28 @@ export default function PatientDashboard() {
 
   const formatBloodPressureValue = (value: string) => {
     try {
-      // Try parsing as JSON first
+      // Try JSON-parsed value
       const parsed = JSON.parse(value);
       if (parsed.systolic && parsed.diastolic) {
-        return `${parsed.systolic.replace(" mmHg", "")}/${parsed.diastolic.replace(" mmHg", "")}`;
+        const systolic = parsed.systolic.replace(" mmHg", "").trim();
+        const diastolic = parsed.diastolic.replace(" mmHg", "").trim();
+        return `${systolic}/${diastolic} (mmHg)`;
       }
-    } catch (err) {
-      // If not JSON, handle manually
+    } catch {
+      // Not JSON — handle string format
       const systolicMatch = value.match(/Systolic:\s*(\d+)\s*mmHg/i);
       const diastolicMatch = value.match(/Diastolic:\s*(\d+)\s*mmHg/i);
       if (systolicMatch && diastolicMatch) {
-        return `${systolicMatch[1]}/${diastolicMatch[1]}`;
+        return `${systolicMatch[1]}/${diastolicMatch[1]} (mmHg)`;
       }
-
-      // Fallback: assume already in proper format like "120/80"
-      if (value.includes("/")) return value;
+      // Already in proper format like "120/80"
+      if (value.includes("/")) return `${value.trim()} (mmHg)`;
     }
 
     return "N/A";
   };
+
+
 
   return (
     <MainLayout>
@@ -122,14 +125,14 @@ export default function PatientDashboard() {
           alignItems="center"
         >
           <Box>
-            <Typography variant="body2">Hello {userFirstName}{" "}{userLastName}</Typography>
+            <Typography variant="h5">Hello {userFirstName}{" "}{userLastName}</Typography>
             <Typography fontWeight="bold" variant="h6">
-              {patientName}
+              How are you feeling right now?
             </Typography>
           </Box>
         </Box>
 
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h4" gutterBottom>
           Measurements
         </Typography>
         {loading ? (
@@ -175,14 +178,15 @@ export default function PatientDashboard() {
                     <Typography sx={{ color: "black", fontSize: 25 }}>{label}</Typography>
                     <Typography variant="body1" color="textSecondary">
                       Last Reading - {""}
-                      {/* {new Date(time).toLocaleDateString()} &nbsp;&nbsp;
-                                        {new Date(time).toLocaleTimeString()} */}
                       {time
                         ? `${new Date(time).toLocaleDateString()} ${new Date(time).toLocaleTimeString()}`
                         : "N/A"}
                     </Typography>
                     <Typography sx={{ color: "blue", fontSize: 22 }}>
-                      {value ? `${value}` : `N/A ${unit}`}
+                      {/* {value ? `${value}` : `N/A ${unit}`} */}
+                      {key === "bloodPressure"
+                        ? formatBloodPressureValue(item.value)
+                        : `${item.value} ${ ""}`}
                     </Typography>
                   </Box>
                   <IconButton>
@@ -195,9 +199,9 @@ export default function PatientDashboard() {
         )}
 
 
-        <Typography variant="h6" mt={4} gutterBottom>
-          Assessments
-        </Typography>
+          {/* <Typography variant="h6" mt={4} gutterBottom>
+            Assessments
+          </Typography> */}
         {(patientData?.assessments || []).map((item: any) => (
           <Card key={item.date} sx={{ mb: 2 }}>
             <CardContent>

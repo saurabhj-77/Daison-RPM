@@ -10,8 +10,7 @@ import dasionLogo from '../../assests/img/dasionlogo.png';
 export function Navbar() {
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const providerObj = { nameTitle: "Dr.", name: "John Doe", image: "" };
-  // const providerUserName = localStorage.getItem("userName");
+  const providerObj = { nameTitle: "Dr."};
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const userRole = user?.userType || localStorage.getItem("role");
   const providerUserName = user?.firstName || localStorage.getItem("userName");
@@ -31,16 +30,10 @@ export function Navbar() {
     navigate("/")
   };
 
-  const viewProfile = (e: any) => {
-    e.preventDefault()
-    // setAnchorEl(null);
-    navigate("/provider/doctor_profile")
-  };
-
   const userDisplayName = () => {
     const role = userRole?.toLowerCase();
     const name = providerUserName
-      ? providerUserName.replace(/^"|"$/g, "") // strip surrounding quotes
+      ? providerUserName.replace(/^"|"$/g, "")
       : "";
 
     if (role === "doctor") {
@@ -69,9 +62,7 @@ export function Navbar() {
             alignItems: "center"
           }}
         >
-         <Box component="img" src={dasionLogo} alt="dasion" sx={{ width: 40, height: 40, mr: 1 }} /> 
-        {/* <Box component="img" src="/assets/img/dasionlogo.png" alt="dasion" sx={{ width: 40, height: 40, mr: 1 }} /> */}
-          Dasion Smart RPM
+         <Box component="img" src={dasionLogo} alt="dasion" sx={{ width: 40, height: 40, mr: 1 }} />           Dasion Smart RPM
         </Typography>
 
 
@@ -80,24 +71,16 @@ export function Navbar() {
           {providerObj ? (
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <div>
-                <Button onClick={handleMenuOpen} startIcon={<Avatar src={providerObj.image || "/assets/img/profilePic.jpg"} />}>
+                <Button onClick={handleMenuOpen} startIcon={<Avatar src={"/assets/img/profilePic.jpg"} />}>
                   {userDisplayName()}
                 </Button>
                 <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClick={handleMenuClose}>
                   <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                  <MenuItem onClick={viewProfile}>View Profile</MenuItem>
                 </Menu>
               </div>
             </Box>
           ) : (
-            <>
-              <Button component={Link} href="/login" variant="text"
-              >
-                Login
-              </Button>
-              <Button component={Link} href="/register" variant="contained">
-                Register
-              </Button>
+            <>            
             </>
           )}
         </Box>

@@ -10,9 +10,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../../layout/MainLayout";
 
-// Sample doctorId from current logged in doctor (simulate)
-const currentDoctorId = "doctor123";
-
 type Patient = {
   id: string;
   firstName: string;
@@ -26,13 +23,6 @@ export default function DoctorAddPatients() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
-  // const addPatientToDoctor = (id: string) => {
-  //   const updated = patients.map((p) =>
-  //     p.id === id ? { ...p, doctor: currentDoctorId } : p
-  //   );
-  //   setPatients(updated);
-  // };
 
   const addPatientToDoctor = async (patientId: string) => {
     const token = localStorage.getItem("accessToken");
